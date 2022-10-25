@@ -1,0 +1,30 @@
+name: Flutter CI
+
+on:
+  push:
+    braches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "2.10.0"
+          channel: "stable"
+      - name: Clean Flutter App
+        run: flutter clean
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Run ios build
+        run: flutter build ios --release --no-codesign --flavor dev
+      - name: Upload IPA
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-ipa
+          path: build/ios/iphoneos/Runner.app
