@@ -1,11 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
+import 'package:get_version/get_version.dart';
+import 'firebase_options.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  String projectAppID;
+  String env = "No env";
+  // Platform messages may fail, so we use a try/catch PlatformException.
+  try {
+    projectAppID = await GetVersion.appID;
+    switch (projectAppID) {
+      case 'com.cicd.test':
+        print("Running for Test $projectAppID");
+        env = "TEST";
+        // await dotenv.load(fileName: ".env.staging");
+        break;
+      case 'com.cicd.prod':
+        print("Running for Prod $projectAppID");
+        env = "PROD";
+        // await dotenv.load(fileName: ".env.production");
+        break;
+      default:
+        print("Running for Dev $projectAppID");
+        env = "DEV";
+
+        //await dotenv.load(fileName: ".env");
+        break;
+    }
+  } on PlatformException {
+    projectAppID = 'Failed to get app ID.';
+  }
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MyApp(env: env));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key, this.env = ""});
+
+  String env;
 
   // This widget is the root of your application.
   @override
@@ -24,7 +61,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutter Demo Home Page $env'),
     );
   }
 }
