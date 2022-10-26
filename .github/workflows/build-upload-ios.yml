@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
       - name: Run ios build
-        run: flutter build ios --release --no-codesign
+        run: flutter build ios --release --no-codesign --flavor dev
       # - name: Upload IPA
       #   uses: actions/upload-artifact@v3
       #   with:
